@@ -80,34 +80,28 @@
     console.log('Welcome!  Fetching your information.... ');
     FB.api('/me', function(response) {
       console.log('Successful login for: ' + response.name);
-      document.getElementById('status').innerHTML =
-        'Thanks for logging in, ' + response.name + '!';
+      // document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
     });
 
-    /* make the API call */
+   
+  
+  
+
+
+  
     FB.api(
-      "/me?fields=albums{name,id}",
+      "me?fields=albums{name,id}",
       function (response) {
         if (response && !response.error) {
-          /*
-          {
-            "albums": {
-              "data": [
-                {
-                  "name": "Hackathon 2016",
-                  "id": "10154256250210229"
-                },
-          */
-            if (response.albums && response.albums.data){
-                var albums = response.albums.data;
-                for (var album in albums) {
-                  if (album.hasOwnProperty(name) && album.name == "Hackathon 2016") {
-                      document.getElementById('status').innerHTML += ", hackathon is at: " + album.id;
-                  }
-                }
-            }
-
-          /* handle the result */
+          console.log("the albums are:");
+          if (response.albums && response.albums.data){
+            var albums = response.albums.data;
+            albums.forEach(function (album) {
+              if (album.hasOwnProperty('name') && album.name == "Hackathon 2016") {
+                document.getElementById('status').innerHTML += ", hackathon is at: " + album.id;
+              }
+            });
+          }
         }
       }
     );
@@ -120,7 +114,7 @@
   the FB.login() function when clicked.
 -->
 
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+<fb:login-button scope="public_profile,email,user_photos" onlogin="checkLoginState();">
 </fb:login-button>
 
 <div id="status">
