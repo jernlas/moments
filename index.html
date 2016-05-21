@@ -3,10 +3,14 @@
 <head>
   <title>Facebook Login JavaScript Example</title>
   <meta charset="UTF-8">
+  <script src="http://connect.facebook.net/en_US/sdk.js"></script>
 </head>
-<body>
-  <script src="deferred.js" ></script>
+<body style="margin: 0; padding: 0; width: 100%; height: 100%">
+<div id="pic" style="background-position: center; background-size: cover; transition: opacity 1s linear; opacity: 1; position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+<div id="pic2" style="background-position: center; background-size: cover; transition: opacity 1s linear; opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+<script src="deferred.js" ></script>
   <script>
+  var photos = [];
   // This is called with the results from from FB.getLoginStatus().
   function statusChangeCallback(response) {
     // The response object is returned with a status field that lets the
@@ -37,13 +41,13 @@
     });
   }
 
-  window.fbAsyncInit = function() {
+ 
     FB.init({
       appId      : '1056841761090755',
       cookie     : true,  // enable cookies to allow the server to access
       // the session
       xfbml      : true,  // parse social plugins on this page
-      version    : 'v2.6' // use graph api version 2.5
+      version    : 'v2.6' // use graph api version 2.6
     });
 
     // Now that we've initialized the JavaScript SDK, we call
@@ -57,13 +61,13 @@
     //    your app or not.
     //
     // These three cases are handled in the callback function.
-
+/*
     FB.getLoginStatus(function(response) {
       statusChangeCallback(response);
     });
+*/
 
-  };
-
+/*
   // Load the SDK asynchronously
   (function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
@@ -72,7 +76,7 @@
     js.src = "http://connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
-
+*/
 
   var pictures = [];
 
@@ -102,9 +106,10 @@
               if (found) {
                 whenAlbumIdAvailable.callback(found.id);
               }
-            } else if (response.albums.paging && response.albums.paging.next){
+            } else if (response.albums && response.albums.paging && response.albums.paging.next){
               return recursiveGetSpecificAlbumId(response.albums.paging.next, soughtAlbumName);
             } else {
+              debugger;
               return false;
             }
           }
@@ -145,23 +150,123 @@
 
     whenAlbumIdAvailable.then(function (albumId) {
       console.log("Album found: " + albumId);
-      recursiveGetAllPicsInAlbum(albumId + "/photos?fields=images,id,name&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH")
+      recursiveGetAllPicsInAlbum(albumId + "?fields=photos{images,id,name}&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH")
     });
 
     whenPictureDataIdAvailable.then(function (pictureArray) {
       console.log("Pictures in album: ");
       console.log(pictureArray);
+      photos = pictureArray.slice();
+      albumUpdated();
     });
 
-    recursiveGetSpecificAlbumId("me/albums?fields=name,id&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH", "Hackathon 2016");
+    recursiveGetSpecificAlbumId("me?fields=albums{name,id}&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH", "Hackathon 2016");
 
 
   }
   
-  testAPI();
+  setInterval(testAPI, 10*1000);
   </script>
+<script>
+  
+  
+
+var originalPhotos = [
+  {
+    url: "first.jpg",
+    text: "Det här är första texten."
+  },
+  {
+    url: "second.jpg",
+    text: "Det här är andra texten."
+  },
+  {
+    url: "third.jpg",
+    text: "Det här är tredje texten."
+  },
+  {
+    url: "fourth.jpg",
+    text: "Det här är fjärde texten."
+  },
+];
+
+
+var picDiv = [];
+picDiv[0] = document.getElementById("pic");
+picDiv[1] = document.getElementById("pic2");
+
+var counter = 0;
+var next = 0;
+var numberOfPhotos = 0;
+var pics = [new Image(), new Image()];
+
+pics[1].onload = showPicture;
+
+
+function albumUpdated () {
+  // Update the number of photos
+  
+  
+  if (numberOfPhotos === 0 && photos.length > 0) {
+    // Start everything...
+    pics[next] = new Image();
+    pics[next].onload = onloaded;
+    pics[next].src = photos[counter].url;
+  }
+  
+  numberOfPhotos = photos.length;
+};
+
+var onloaded = function () {
+  showPicture();
+  
+  setTimeout(function () {
+    if (numberOfPhotos > 1) {
+      counter = ++counter % numberOfPhotos;
+      next = ++next %2;
+      pics[next] = new Image();
+      pics[next].onload = onloaded;
+      pics[next].src = photos[counter].url; 
+    } else {
+      setTimeout(onloaded, 8*1000);
+    }
+  }, 8*1000);
+};
+
+pics[next].onload = onloaded;
+
+var showPicture = function () {
+  picDiv[next].style.opacity = 1;
+  picDiv[next].style.backgroundImage = "url(" + pics[next].src + ")";
+  picDiv[((next-1)+2) % 2].style.opacity = 0;
+}
+
+var loadNext = function () {
+  
+}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
 </body>
 </html>
+  
