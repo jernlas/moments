@@ -4,10 +4,32 @@
   <title>Facebook Login JavaScript Example</title>
   <meta charset="UTF-8">
   <script src="http://connect.facebook.net/en_US/sdk.js"></script>
+  <style>
+    
+    .subs {
+      font-size: 34px;
+      color: #FFFFFF;
+      position: absolute;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      background-color: rgba(0,0,0,0.2);
+      text-align: center;
+      bottom: 100px;
+      width: 100%;
+    }
+    
+    </style>
 </head>
 <body style="margin: 0; padding: 0; width: 100%; height: 100%; background-color: red;">
-<img id="pic" style="position: fixed; top: 0; left: 0; width:100%; transition: opacity 1s linear;"></img>
-<img id="pic2" style="position: fixed; top: 0; left: 0; width:100%; transition: opacity 1s linear;"></img>
+<div id="div1" style="position: fixed; top: 0; left: 0; height: 100%; width: 100%; transition: opacity 1s linear;">
+  <img id="pic" style="position: fixed; top: 0; left: 0; height: auto; width: 100%; transition: opacity 1s linear;"></img>
+  <div class="subs">Hej mor! Det här gjorde jag på jobbet idag!</div>
+</div>
+
+<div id="div2" style="position: fixed; top: 0; left: 0; height: 100%; width: 100%; transition: opacity 1s linear; opacity: 0;">
+  <img id="pic2" style="position: fixed; top: 0; left: 0; height: auto; width: 100%; transition: opacity 1s linear;"></img>
+  <div class="subs">WINNING #TigerBlood!</div>
+</div>
 
 <!--
 <div id="pic" style="background-position: center; background-size: cover; transition: opacity 1s linear; opacity: 1; position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
@@ -215,16 +237,21 @@ var originalPhotos = [
 ];
 
 
-var picDiv = [];
-picDiv[0] = document.getElementById("pic");
-picDiv[1] = document.getElementById("pic2");
+var picdiv = [];
+var divpic = [];
+picdiv[0] = document.getElementById("pic");
+picdiv[1] = document.getElementById("pic2");
+
+divpic[0] = document.getElementById("div1");
+divpic[1] = document.getElementById("div2");
 
 var counter = 0;
 var next = 0;
 var numberOfPhotos = 0;
 var pics = [new Image(), new Image()];
 
-pics[1].onload = showPicture;
+picdiv[1].onload = showPicture;
+picdiv[0].onload = showPicture;
 
 
 function albumUpdated () {
@@ -234,8 +261,8 @@ function albumUpdated () {
   if (numberOfPhotos === 0 && photos.length > 0) {
     // Start everything...
     //pics[next] = new Image();
-    pics[next].onload = onloaded;
-    pics[next].src = photos[counter].url;
+    picdiv[next].onload = onloaded;
+    picdiv[next].src = photos[counter].url;
   }
   
   numberOfPhotos = photos.length;
@@ -249,24 +276,23 @@ var onloaded = function () {
       counter = ++counter % numberOfPhotos;
       next = ++next %2;
       //pics[next] = new Image();
-      pics[next].onload = onloaded;
-      pics[next].src = photos[counter].url; 
+      picdiv[next].onload = onloaded;
+      picdiv[next].src = photos[counter].url; 
     } else {
       setTimeout(onloaded, 8*1000);
     }
   }, 8*1000);
 };
 
-pics[next].onload = onloaded;
+picdiv[next].onload = onloaded;
 
 var showPicture = function (oldNext) {
-  picDiv[oldNext].src = pics[oldNext].src;
   console.log("SET THE IMAGE SOURCE");
   
   wait(4000)
   .then(function () {
     console.log("CHANGING OPACITY");
-    picDiv[1].style.opacity = oldNext % 2;
+    divpic[1].style.opacity = oldNext % 2;
     //picDiv[oldNext].style.opacity = 1;
     //picDiv[((oldNext-1)+2) % 2].style.opacity = 0;
   })
