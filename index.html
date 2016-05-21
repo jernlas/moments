@@ -43,7 +43,7 @@
       cookie     : true,  // enable cookies to allow the server to access
       // the session
       xfbml      : true,  // parse social plugins on this page
-      version    : 'v2.5' // use graph api version 2.5
+      version    : 'v2.6' // use graph api version 2.5
     });
 
     // Now that we've initialized the JavaScript SDK, we call
@@ -120,8 +120,8 @@
             if (response.photos && response.photos.data){
 
               var returnData = response.photos.data.map(function (photo) {
-                //console.log("Processing photo: ");
-                //console.log(photo);
+                console.log("Processing photo: ");
+                console.log(photo);
 
   
                 var photoUrl = photo.images[0].source;
@@ -145,7 +145,7 @@
 
     whenAlbumIdAvailable.then(function (albumId) {
       console.log("Album found: " + albumId);
-      recursiveGetAllPicsInAlbum(albumId + "?fields=photos{images,id,name}")
+      recursiveGetAllPicsInAlbum("/" + albumId + "?fields=photos{images,id,name}")
     });
 
     whenPictureDataIdAvailable.then(function (pictureArray) {
@@ -153,7 +153,7 @@
       console.log(pictureArray);
     });
 
-    recursiveGetSpecificAlbumId("me?fields=albums{name,id}", "Hackathon 2016");
+  recursiveGetSpecificAlbumId("/me?fields=albums{name,id}", "Hackathon 2016");
 
 
   }
