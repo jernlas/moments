@@ -228,17 +228,20 @@ var onloaded = function () {
       pics[next].onload = onloaded;
       pics[next].src = photos[counter].url; 
     } else {
-      setTimeout(onloaded, 8*1000);
+      setTimeout(onloaded, 6*1000);
     }
-  }, 8*1000);
+  }, 6*1000);
 };
 
 pics[next].onload = onloaded;
 
 var showPicture = function () {
-  picDiv[next].style.opacity = 1;
   picDiv[next].style.backgroundImage = "url(" + pics[next].src + ")";
-  picDiv[((next-1)+2) % 2].style.opacity = 0;
+  wait(2000)
+  .then(function () {
+    picDiv[next].style.opacity = 1;
+    picDiv[((next-1)+2) % 2].style.opacity = 0;
+  })
 }
 
 var loadNext = function () {
