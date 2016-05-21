@@ -267,6 +267,13 @@ function albumUpdated () {
     //pics[next] = new Image();
     picdiv[next].onload = onloaded;
     picdiv[next].src = photos[counter].url;
+    if (photos[counter].text) {
+      subs[next].innerHTML = photos[counter].text;
+      subs[next].style.display = "block";
+    } else {
+      subs[next].style.display = "none";
+    }
+    
   }
   
   numberOfPhotos = photos.length;
@@ -282,7 +289,12 @@ var onloaded = function () {
       //pics[next] = new Image();
       picdiv[next].onload = onloaded;
       picdiv[next].src = photos[counter].url;
-      subs[next].innerHTML = photos[counter].text;
+      if (photos[counter].text) {
+        subs[next].innerHTML = photos[counter].text;
+        subs[next].style.display = "block";
+      } else {
+        subs[next].style.display = "none";
+      }
     } else {
       setTimeout(onloaded, 8*1000);
     }
