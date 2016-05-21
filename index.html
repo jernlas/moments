@@ -94,11 +94,14 @@ function testAPI() {
           if (response && !response.error) {
             if (response.albums && response.albums.data){
               var albums = response.albums.data;
-              albums.forEach(function (album) {
-                if (album.hasOwnProperty('name') && album.name == name) {
-                  album.id;
-                }
+              console.log(albums);
+              var found = albums.find(function (album) {
+                return (album.name && album.name == name); 
               });
+
+              if (found) {
+                return found.id;
+              }
             } else if (response.albums.paging && response.albums.paging.next){
               return iterate(response.albums.paging.next);
             } else {
