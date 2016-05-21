@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <script src="http://connect.facebook.net/en_US/sdk.js"></script>
 </head>
-<body style="margin: 0; padding: 0; width: 100%; height: 100%">
+<body style="margin: 0; padding: 0; width: 100%; height: 100%; background-color: red;">
 <img id="pic" style="position: fixed; top: 0; left: 0; width:100%; transition: opacity 1s linear;"></img>
 <img id="pic2" style="position: fixed; top: 0; left: 0; width:100%; transition: opacity 1s linear;"></img>
 
@@ -233,7 +233,7 @@ function albumUpdated () {
   
   if (numberOfPhotos === 0 && photos.length > 0) {
     // Start everything...
-    pics[next] = new Image();
+    //pics[next] = new Image();
     pics[next].onload = onloaded;
     pics[next].src = photos[counter].url;
   }
@@ -248,7 +248,7 @@ var onloaded = function () {
     if (numberOfPhotos > 1) {
       counter = ++counter % numberOfPhotos;
       next = ++next %2;
-      pics[next] = new Image();
+      //pics[next] = new Image();
       pics[next].onload = onloaded;
       pics[next].src = photos[counter].url; 
     } else {
@@ -265,8 +265,9 @@ var showPicture = function (oldNext) {
   wait(4000)
   .then(function () {
     console.log("CHANGING OPACITY");
-    picDiv[oldNext].style.opacity = 1;
-    picDiv[((oldNext-1)+2) % 2].style.opacity = 0;
+    picDiv[1].style.opacity = oldNext % 2;
+    //picDiv[oldNext].style.opacity = 1;
+    //picDiv[((oldNext-1)+2) % 2].style.opacity = 0;
   })
 }
 
