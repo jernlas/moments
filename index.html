@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 </head>
 <body>
+<script src="deferred.js" ></script>
 <script>
 // This is called with the results from from FB.getLoginStatus().
 function statusChangeCallback(response) {
@@ -89,14 +90,14 @@ function testAPI() {
   var whenAlbumIdAvailable = new Deferred();
   var whenPictureDataIdAvailable = new Deferred();
 
-  whenAlbumIdAvailable.callback(param1, param2, ...);
   whenAlbumIdAvailable.then(function (album) {
     console.log(album);
   });
 
   function recursiveGetSpecificAlbumId(nextEP, soughtAlbumName){
+    console.log("launching request");
     FB.api(
-      next,
+      nextEP,
       function (response) {
         if (response && !response.error) {
           if (response.albums && response.albums.data){
@@ -110,7 +111,7 @@ function testAPI() {
               whenAlbumIdAvailable.callback(found.id);
             }
           } else if (response.albums.paging && response.albums.paging.next){
-            return recursiveGetSpecificAlbumId(response.albums.paging.next);
+            return recursiveGetSpecificAlbumId(response.albums.paging.next, soughtAlbumName);
           } else {
             return false;
           }
@@ -123,7 +124,9 @@ function testAPI() {
 
   }
 
-  recursiveGetSpecificAlbum("me?fields=albums{name,id}", "Hackathon 2016");
+
+  console.log("getting album id")
+  recursiveGetSpecificAlbumId("me?fields=albums{name,id}", "Hackathon 2016");
 
 
 }
