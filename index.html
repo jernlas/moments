@@ -6,8 +6,13 @@
   <script src="http://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 <body style="margin: 0; padding: 0; width: 100%; height: 100%">
+<img id="pic" style="position: fixed; top: 0; left: 0; width:100%; transition: opacity 1s linear;"></img>
+<img id="pic2" style="position: fixed; top: 0; left: 0; width:100%; transition: opacity 1s linear;"></img>
+
+<!--
 <div id="pic" style="background-position: center; background-size: cover; transition: opacity 1s linear; opacity: 1; position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
 <div id="pic2" style="background-position: center; background-size: cover; transition: opacity 1s linear; opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+-->
 <script src="deferred.js" ></script>
   <script>
   var photos = [];
@@ -255,7 +260,7 @@ var onloaded = function () {
 pics[next].onload = onloaded;
 
 var showPicture = function (oldNext) {
-  picDiv[oldNext].style.backgroundImage = "url(" + pics[oldNext].src + ")";
+  picDiv[oldNext].src = pics[oldNext].src;
   console.log("SET THE IMAGE SOURCE");
   wait(4000)
   .then(function () {
