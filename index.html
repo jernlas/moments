@@ -89,10 +89,8 @@
 
 
 
-    var whenAlbumIdAvailable = new Deferred();
-    var whenPictureDataIdAvailable = new Deferred();
-
     function recursiveGetSpecificAlbumId(nextEP, soughtAlbumName){
+      var d = new Deferred();
       FB.api(
         nextEP,
         function (response) {
@@ -104,20 +102,21 @@
               });
 
               if (found) {
-                whenAlbumIdAvailable.callback(found.id);
+                d.callback(found.id);
               }
             } else if (response.albums && response.albums.paging && response.albums.paging.next){
               return recursiveGetSpecificAlbumId(response.albums.paging.next, soughtAlbumName);
             } else {
-              debugger;
               return false;
             }
           }
         }
       );
+      return d;
     }
 
     function recursiveGetAllPicsInAlbum(nextEP){
+      var d = new Deferred();
       FB.api(
         nextEP,
         function (response) {
@@ -134,8 +133,8 @@
 
                 return {'url': photoUrl, 'text': photoText};
               });
-
-              whenPictureDataIdAvailable.callback(returnData);
+              console.log("TJOOO")
+              d.callback(returnData);
 
             } else if (response.photos.paging && response.photos.paging.next){
               throw "Not implemented"
@@ -146,26 +145,46 @@
           }
         }
       );
+      return d;
     }
 
-    whenAlbumIdAvailable.then(function (albumId) {
+    whenAlbumIdAvailable = function (albumId) {
       console.log("Album found: " + albumId);
-      recursiveGetAllPicsInAlbum(albumId + "?fields=photos{images,id,name}&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH")
-    });
+      globalAlbumId = albumId;
+      return recursiveGetAllPicsInAlbum(albumId + "?fields=photos{images,id,name}&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH")
+      .then(function (pictureArray) {
+        console.log("Pictures in album: ");
+        console.log(pictureArray);
+        photos = pictureArray.slice();
+        albumUpdated();
+      });
+    };
+      
+      
+    checkForNewPics = function () {
+      recursiveGetAllPicsInAlbum(globalAlbumId + "?fields=photos{images,id,name}&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH")
+      .then(function (pictureArray) {
+        console.log("Pictures in album: ");
+        console.log(pictureArray);
+        photos = pictureArray.slice();
+        albumUpdated();
+        setTimeout(checkForNewPics, 20 * 1000);
+      });
+    }
 
-    whenPictureDataIdAvailable.then(function (pictureArray) {
-      console.log("Pictures in album: ");
-      console.log(pictureArray);
-      photos = pictureArray.slice();
-      albumUpdated();
-    });
 
-    recursiveGetSpecificAlbumId("me?fields=albums{name,id}&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH", "Hackathon 2016");
+  
+
+    recursiveGetSpecificAlbumId("me?fields=albums{name,id}&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH", "Hackathon 2016")
+    .then(whenAlbumIdAvailable)
+    .then(checkForNewPics);
 
 
   }
+  testAPI();
   
-  setInterval(testAPI, 10*1000);
+  
+  //setInterval(testAPI, 10*1000);
   </script>
 <script>
   
@@ -237,8 +256,10 @@ pics[next].onload = onloaded;
 
 var showPicture = function (oldNext) {
   picDiv[oldNext].style.backgroundImage = "url(" + pics[oldNext].src + ")";
+  console.log("SET THE IMAGE SOURCE");
   wait(4000)
   .then(function () {
+    console.log("CHANGING OPACITY");
     picDiv[oldNext].style.opacity = 1;
     picDiv[((oldNext-1)+2) % 2].style.opacity = 0;
   })
