@@ -74,51 +74,58 @@ window.fbAsyncInit = function() {
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
+
+var pictures = [];
+
 // Here we run a very simple test of the Graph API after login is
 // successful.  See statusChangeCallback() for when this call is made.
 function testAPI() {
-  console.log('Welcome!  Fetching your information.... ');
   FB.api('/me', function(response) {
     console.log('Successful login for: ' + response.name);
-    // document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
   });
 
 
 
+  var whenAlbumIdAvailable = new Deferred();
+  var whenPictureDataIdAvailable = new Deferred();
 
-  function getUserAlbumByName(user, name){
-    var iterate = function(next){
-      FB.api(
-        next,
-        function (response) {
-          if (response && !response.error) {
-            if (response.albums && response.albums.data){
-              var albums = response.albums.data;
-              console.log(albums);
-              var found = albums.find(function (album) {
-                return (album.name && album.name == name); 
-              });
+  whenAlbumIdAvailable.callback(param1, param2, ...);
+  whenAlbumIdAvailable.then(function (album) {
+    console.log(album);
+  });
 
-              if (found) {
-                return found.id;
-              }
-            } else if (response.albums.paging && response.albums.paging.next){
-              return iterate(response.albums.paging.next);
-            } else {
-              return false;
+  function recursiveGetSpecificAlbumId(nextEP, soughtAlbumName){
+    FB.api(
+      next,
+      function (response) {
+        if (response && !response.error) {
+          if (response.albums && response.albums.data){
+            var albums = response.albums.data;
+            console.log(albums);
+            var found = albums.find(function (album) {
+              return (album.name && album.name == soughtAlbumName);
+            });
+
+            if (found) {
+              whenAlbumIdAvailable.callback(found.id);
             }
+          } else if (response.albums.paging && response.albums.paging.next){
+            return recursiveGetSpecificAlbumId(response.albums.paging.next);
+          } else {
+            return false;
           }
         }
-      );
-    };
-    return iterate(user + "?fields=albums{name,id}");
-  };
+      }
+    );
+  }
 
-  var albumId = getUserAlbumByName("me", "Hackathon 2016");
-  console.log(albumId);
-  document.getElementById('status').innerHTML = "Album Hackathon 2016 is at: " + albumId;
+  function recursiveGetAllPicsInAlbum(){
 
-  
+  }
+
+  recursiveGetSpecificAlbum("me?fields=albums{name,id}", "Hackathon 2016");
+
+
 }
 </script>
 
