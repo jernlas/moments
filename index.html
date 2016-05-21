@@ -79,7 +79,7 @@
   // Here we run a very simple test of the Graph API after login is
   // successful.  See statusChangeCallback() for when this call is made.
   function testAPI() {
-    FB.api('/me', function(response) {
+    FB.api('/me?access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH', function(response) {
       console.log('Successful login for: ' + response.name);
     });
 
@@ -145,7 +145,7 @@
 
     whenAlbumIdAvailable.then(function (albumId) {
       console.log("Album found: " + albumId);
-      recursiveGetAllPicsInAlbum("/" + albumId + "?fields=photos{images,id,name}")
+      recursiveGetAllPicsInAlbum(albumId + "/photos?fields=images,id,name&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH")
     });
 
     whenPictureDataIdAvailable.then(function (pictureArray) {
@@ -153,23 +153,15 @@
       console.log(pictureArray);
     });
 
-  recursiveGetSpecificAlbumId("/me?fields=albums{name,id}", "Hackathon 2016");
+    recursiveGetSpecificAlbumId("me/albums?fields=name,id&access_token=EAAPBMSXA7MMBANPM4hds896Mj6HcyNmmTYkQKZBTXs0IvcmFIy60UgcPZCGjNhctSBfZCDIzcsZBYnyeAFQZBz2eNd4B2wnB7pjNU2K6q5KUJ7rAAqZARHoD3AhxkrBDpj5r4w8wlq27VqLZB9hnLpH", "Hackathon 2016");
 
 
   }
+  
+  testAPI();
   </script>
 
-  <!--
-  Below we include the Login Button social plugin. This button uses
-  the JavaScript SDK to present a graphical Login button that triggers
-  the FB.login() function when clicked.
--->
 
-<fb:login-button scope="public_profile,email,user_photos" onlogin="checkLoginState();">
-</fb:login-button>
-
-<div id="status">
-</div>
 
 </body>
 </html>
